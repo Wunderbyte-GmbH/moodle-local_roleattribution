@@ -29,6 +29,6 @@ $observers = array(
 
     array(
         'eventname' => '\core\event\user_loggedin',
-        'callback' => 'local_roleattribution\observer.php',
+        'callback' => 'local_roleattribution_observer::userlogin',
     ),
 );
