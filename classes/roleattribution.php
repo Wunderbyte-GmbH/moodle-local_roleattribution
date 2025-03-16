@@ -43,7 +43,11 @@ class roleattribution {
      */
     public static function sync_roles($user) {
 
-        $samlcourses = explode(',', $user->department);
+        $samlcourses = array_merge(
+            explode(',', $user->department),
+            explode(',', $user->institution)
+        );
+
 
         // IAM course creator role.
         $roletohandle = 12;
