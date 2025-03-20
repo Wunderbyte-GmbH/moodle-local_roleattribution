@@ -43,7 +43,8 @@ class roleattribution {
      */
     public static function sync_roles($user) {
 
-        $samlcourses = array_merge(
+        // Get all roles vie user fields separated by commas.
+        $affilations = array_merge(
             explode(',', $user->department),
             explode(',', $user->institution)
         );
@@ -64,18 +65,17 @@ class roleattribution {
             return;
         }
 
-        $affilations = $samlcourses;
-
-        $aclshouldhave = array();
-        foreach ($affilations as $key => $affilation) {
+        // Array of roles that user should have in a context.
+        $aclshouldhave = [];
+        foreach ($affilations as $affilation) {
             if (preg_match("/(.*)-TEACHER/i", $affilation, $school)) {
                 $contextid = self::get_contextid_by_catname($school[1]);
                 if ($school[1] == 'EP-ALL') {
-                    if (! in_array($efid, $aclshouldhave)) {
+                    if ($efid != 0 && !in_array($efid, $aclshouldhave)) {
                         $aclshouldhave[] = $efid;
                     }
                 } else {
-                    if (! in_array($esestid, $aclshouldhave)) {
+                    if ($esestid != 0 && !in_array($esestid, $aclshouldhave)) {
                         $aclshouldhave[] = $esestid;
                     }
                 }
@@ -85,7 +85,7 @@ class roleattribution {
             }
         }
 
-        $aclhas = array();
+        $aclhas = [];
 
         $uacl = get_user_roles_sitewide_accessdata($user->id);
         foreach ($uacl['ra'] as $key => $value) {
@@ -106,7 +106,6 @@ class roleattribution {
         foreach ($tounassign as $key => $contextid) {
             role_unassign($roletohandle, $user->id, $contextid);
         }
-
     }
 
     public static function get_contextid_by_catname($school) {
